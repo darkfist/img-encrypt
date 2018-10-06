@@ -10,6 +10,16 @@ from numpy import array
 import numpy as np
 
 
+# taking msg as input and converting it to binary
+msg = input("Enter the message to encrypt in the image: ")
+bmsg = []
+for i in msg:
+	bmsg.append(format(int(ord(i)), '08b'))
+
+bmsg = "".join(bmsg)
+print("Encrypting.........\nPlease Wait! It may take few minutes.......")
+
+
 img = Image.open('test.jpg') # path of the image to encrypt (with extension)
 rows, columns, channels = np.shape(img)
 arr = array(img)
@@ -26,15 +36,6 @@ for i in range(rows):
 		for k in range(3):
 			arr[i][j][k] = tmp[k] + 1 if is_even(tmp[k]) else tmp[k]
 
-# taking msg as input and converting it to binary
-msg = input("Enter the message to encrypt in the image: ")
-
-bmsg = []
-for i in msg:
-	bmsg.append(format(int(ord(i)), '08b'))
-
-bmsg = "".join(bmsg)
-
 # encrypting the binary msg in the RGB values of the image by using the algorithm
 counter = 0
 for i in range(rows):
@@ -47,5 +48,4 @@ for i in range(rows):
 # forming and then saving image with encrypted RGB values
 img = Image.fromarray(arr, 'RGB')
 img.save('encrypted.png')
-
-img.show()
+print("Done!\nThe image with encrypted message is stored in the same directory.")
