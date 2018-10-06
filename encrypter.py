@@ -9,7 +9,8 @@ from PIL import Image
 from numpy import array
 import numpy as np
 
-img = Image.open('test.jpg') # path of the image
+
+img = Image.open('test.jpg') # path of the image to encrypt (with extension)
 rows, columns, channels = np.shape(img)
 arr = array(img)
 
