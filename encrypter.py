@@ -1,54 +1,52 @@
-"""
-Algorithm :
-Message in converted in binary values.
-Binary digit 0 corresponds to an odd RGB value and binary digit 1 corresponds to an even RGB value of the image.
-If binary value of the message is 1 then the sum of R, G and B values will be an even integer otherwise it will be odd.
-"""
+#!/usr/bin/env python3
+
+'''-------------------------------------------------------------
+* Pixel Wise Image Modification cum Encryption Utility.
+* (Embeds String data into an image.)
+* 07OCT2018
+* Authors: Mohamed S. Haque <ubdussamad@gmail.com> , Nishant Ranjan <nishantranjan1998@gmail.com>
+* Primarily Built around Python3.x
+
+* This program is intended to work with many methods of
+* storing data using image manipulation and is not just
+* supposed to store text but any kind of data may it be
+* another image or an octet stream application into an image. 
+*
+* This program currently utilizes an even odd scheme to store/read binary data into/from an image.
+*
+* Working Principle:
+* Reads a Portable Network Graphic (.png) and converts it to a 2D array.
+* An odd color value represents binary 0 and an even color value represents binary 1.
+* Primarily color values in the image's matrix are converted into odd integer by adding
+* integer value 1 if the color value is even else 0 if the color value is already odd.
+*
+* Scheme: Odd if 0 , even if 1
+------------------------------------------------------------------------------------------'''
 
 from PIL import Image
-from numpy import array
 import numpy as np
+import time
 
+img = Image.open('Desktop/test.jpg') #Reading the Image
 
-# taking msg as input and converting it to binary
-msg = input("Enter the message to encrypt in the image: ")
-bmsg = []
-for i in msg:
-	bmsg.append(format(int(ord(i)), '08b'))
+arr = np.array(img) #Converting the Image into a 2D array
+x,y,z  = np.shape(arr) #Reading the dimensions of the array to determine the storage.
+arr |= 1
+print("The amount of data you can store in this image is: %d kiBs"%((x*y*z)/(1024*8)))
 
-bmsg = "".join(bmsg)
-print("Encrypting.........\nPlease Wait! It may take few minutes.......")
+z = input("Enter the string:") # Scanning the string to be stored.
 
+long_array = [] #Array containing the binary values.
+for i in z:
+    long_array += list(map(int,list(format(ord(i), '#010b')[2:]))) #Storing the characters in binary form (ASCII)
 
-img = Image.open('test.jpg') # path of the image to encrypt (with extension)
-rows, columns, channels = np.shape(img)
-arr = array(img)
+#long_array = np.array([int(i) for i in ''.join([bin(int(format(ord(i), '#010b'),2))[2:] for i in z])])
 
-# function to check a number is even or not
-def is_even(x):
-	if(x%2==0):
-		return 1
+arr.ravel()[:len(long_array)] += np.array(long_array, arr.dtype) #Adds one if there is a one else adds zero hence making even odd pairs. 
 
-# converting every pixel of the image into a odd number
-counter = 0
-for i in range(rows):
-	for j in range(columns):
-		tmp = arr[i][j]
-		for k in range(3):
-			if counter < (len(bmsg)*3 + 24):
-				arr[i][j][k] = tmp[k] + 1 if is_even(tmp[k]) else tmp[k]
-				counter += 1
+image = Image.fromarray(arr) #Recreating the image from the modified array.
 
-# encrypting the binary msg in the RGB values of the image by using the algorithm
-counter = 0
-for i in range(rows):
-	for j in range(columns):
-		tmp = arr[i][j]
-		if counter < len(bmsg):
-			arr[i][j][2] = (tmp[2] + 1 if int(bmsg[counter]) else tmp[2])
-			counter += 1
+image.show() #Displaying the picture.
 
-# forming and then saving image with encrypted RGB values
-img = Image.fromarray(arr, 'RGB')
-img.save('encrypted.png')
-print("Done!\nThe image with encrypted message is stored in the same directory.")
+image.save("secret.png") #Saving the Image for transfer or future use. Note: The output picture must be in PNG format
+#As other formats try to compress the data corrupting the encoded data within the image.
