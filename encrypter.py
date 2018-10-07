@@ -30,11 +30,14 @@ def is_even(x):
 		return 1
 
 # converting every pixel of the image into a odd number
+counter = 0
 for i in range(rows):
 	for j in range(columns):
 		tmp = arr[i][j]
 		for k in range(3):
-			arr[i][j][k] = tmp[k] + 1 if is_even(tmp[k]) else tmp[k]
+			if counter < len(bmsg):
+				arr[i][j][k] = tmp[k] + 1 if is_even(tmp[k]) else tmp[k]
+				counter += 1
 
 # encrypting the binary msg in the RGB values of the image by using the algorithm
 counter = 0
