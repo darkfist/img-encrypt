@@ -35,7 +35,7 @@ for i in range(rows):
 	for j in range(columns):
 		tmp = arr[i][j]
 		for k in range(3):
-			if counter < len(bmsg):
+			if counter < (len(bmsg)*3 + 24):
 				arr[i][j][k] = tmp[k] + 1 if is_even(tmp[k]) else tmp[k]
 				counter += 1
 
